@@ -159,10 +159,14 @@ Important disclaimer:
 
 ## Repo Landmarks
 
+If you want the shortest path through the codebase, see `docs/REPO_MAP.md`.
+
 - `src/main.rs`: runtime loop, prompt template, steering state, telemetry
 - `src/physics/naked_llama.rs`: forward pass and force injection into activations
 - `scripts/chat_raw.py`: local multi-turn CLI
 - `generate_universe_from_gguf.py`: tokenizer-aligned universe generation
+
+A reusable public write-up is also included in `docs/LAUNCH_POST.md`.
 
 ## License / Model Note
 
