@@ -10,6 +10,8 @@ These files are the shortest path to understanding the current working runtime:
 
 - `README.md`: project framing, quick start, recommended model, examples
 - `SECURITY.md`: security and asset-handling policy
+- `CONTRIBUTING.md`: contribution scope and validation expectations
+- `docs/TERMINOLOGY.md`: technical terminology guidance for public-facing writing
 - `src/main.rs`: runtime loop, prompt template, steering state, telemetry, request parsing
 - `src/physics/naked_llama.rs`: activation perturbation during the forward pass
 - `scripts/chat_raw.py`: simple local multi-turn CLI

@@ -16,7 +16,7 @@ This snapshot focuses on the core runtime:
 
 ## Project Direction
 
-Niodoo is aimed at assistant behavior, not benchmark theater.
+Niodoo is aimed at assistant behavior, not benchmark-centric optimization.
 
 The broader direction is:
 
@@ -34,7 +34,7 @@ Current mechanisms include:
 - gravity-like attraction toward context and goals
 - repulsion away from stale or undesirable regions
 - orbital steering
-- Langevin-style noise / wobble
+- Langevin-style stochastic perturbation
 - verbal control tags that feed back into runtime state
 
 It is a hybrid system:
@@ -160,6 +160,8 @@ Important disclaimer:
 ## Repo Landmarks
 
 If you want the shortest path through the codebase, see `docs/REPO_MAP.md`.
+
+For contribution guidance and technical terminology cleanup, see `CONTRIBUTING.md` and `docs/TERMINOLOGY.md`.
 
 - `src/main.rs`: runtime loop, prompt template, steering state, telemetry
 - `src/physics/naked_llama.rs`: forward pass and force injection into activations

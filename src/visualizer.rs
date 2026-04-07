@@ -10,5 +10,5 @@ pub struct RenderParticle {
 
 // Dummy run function if referenced
 pub async fn run_visualizer(_rx: std::sync::mpsc::Receiver<Vec<RenderParticle>>) {
-    println!("Visualizer is disabled in Niodoo Headless Engine.");
+    println!("Visualizer is disabled in headless mode.");
 }

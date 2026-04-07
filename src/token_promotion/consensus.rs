@@ -1,4 +1,4 @@
-//! Niodoo-TCS: Topological Cognitive System
+//! Topological token-promotion subsystem
 //! Copyright (c) 2025 Jason Van Pham
 
 use std::collections::{BTreeMap, HashMap};

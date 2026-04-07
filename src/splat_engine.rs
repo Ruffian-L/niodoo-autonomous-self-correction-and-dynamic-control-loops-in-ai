@@ -4,12 +4,12 @@ use crate::token_promotion::dynamic_tokenizer::DynamicTokenizer;
 use candle_core::{Device, IndexOp, Result, Tensor};
 
 pub struct SplatEngine {
-    pub base_model: MyBaseModel, // Kept for structure, but unused in God Protocol
-    pub adapter: SplatAdapter,   // Kept for structure
-    pub tokenizer: DynamicTokenizer, // Kept for decoding
+    pub base_model: MyBaseModel, // Retained for compatibility; unused in the current steering path
+    pub adapter: SplatAdapter,   // Retained for compatibility
+    pub tokenizer: DynamicTokenizer, // Used for decoding
     pub device: Device,
-    pub ghost_vectors: Vec<Tensor>,
-    pub anti_ghost_vectors: Vec<Tensor>,
+    pub steering_vectors: Vec<Tensor>,
+    pub counter_steering_vectors: Vec<Tensor>,
     pub gain: f64,
 }
 
@@ -26,8 +26,8 @@ impl SplatEngine {
             adapter,
             tokenizer,
             device,
-            ghost_vectors: Vec::new(),
-            anti_ghost_vectors: Vec::new(),
+            steering_vectors: Vec::new(),
+            counter_steering_vectors: Vec::new(),
             gain: 0.6,
         }
     }
@@ -40,25 +40,24 @@ impl SplatEngine {
         self.gain
     }
 
-    pub fn clear_ghosts(&mut self) {
-        self.ghost_vectors.clear();
-        self.anti_ghost_vectors.clear();
+    pub fn clear_steering_vectors(&mut self) {
+        self.steering_vectors.clear();
+        self.counter_steering_vectors.clear();
     }
 
-    pub fn add_ghost_vector(&mut self, vector: Tensor) {
-        self.ghost_vectors.push(vector);
+    pub fn add_steering_vector(&mut self, vector: Tensor) {
+        self.steering_vectors.push(vector);
     }
 
-    pub fn add_anti_ghost_vector(&mut self, vector: Tensor) {
-        self.anti_ghost_vectors.push(vector);
+    pub fn add_counter_steering_vector(&mut self, vector: Tensor) {
+        self.counter_steering_vectors.push(vector);
     }
 
-    pub fn inject_ghost_sequence(&mut self, sequence: &Tensor) -> Result<()> {
+    pub fn inject_steering_sequence(&mut self, sequence: &Tensor) -> Result<()> {
         Ok(())
     }
 
-    /// The God Protocol: Physics-Based Generation
-    /// Replaces token prediction with energetic displacement rendering.
+    /// Physics-based generation step for the experimental splat pathway.
     pub fn step(&mut self, input_tensor: &Tensor) -> anyhow::Result<Tensor> {
         // 1. Decode Input to Text (Reverse Tokenization)
         let input_ids: Vec<u32> = input_tensor.flatten_all()?.to_vec1()?;
@@ -68,18 +67,17 @@ impl SplatEngine {
             .map(|v| v.first().cloned().unwrap_or_default())
             .unwrap_or_default();
 
-        // 2. Run Physics Simulation (The "Thought")
+        // 2. Run the experimental steering stage
         // We need access to the memory store.
         // SplatEngine doesn't own the store directly in this architecture (MemorySystem does).
-        // But we are in God Protocol. We must forge a connection.
-        // For now, we simulate the "thought" by returning a tensor that encodes the
-        // "energy" of the response.
+        // For now, return a placeholder control token that asks the outer loop
+        // to invoke the physics path.
 
         // Since we can't easily access the store here without refactoring `main.rs` to pass it in,
-        // we will emit a special "Physics Token" that the outer loop (in `splat_chat.rs`)
-        // interprets as a signal to run the physics engine.
+        // The outer loop interprets this token as a request to enter the
+        // experimental physics path.
 
-        // Token ID 999999 = "PHYSICS_THOUGHT"
+        // Token ID 999999 = placeholder control token
         let physics_token = 999999u32;
 
         // Return a tensor with just this token

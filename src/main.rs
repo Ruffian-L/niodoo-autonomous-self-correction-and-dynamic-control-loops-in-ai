@@ -28,23 +28,21 @@ use tokenizers::Tokenizer;
 use tokio::sync::mpsc;
 
 // =============================================================================
-// NIODOO v1.0 GOLD MASTER CONFIGURATION
-// Validated: Dec 16, 2025 (Seed 123 Clean / Seed 42 Creative)
-// DO NOT MODIFY without full regression testing.
+// Baseline steering configuration validated on internal smoke tests.
+// Changes here can materially alter decoding behavior and should be regression-tested.
 // =============================================================================
 
-// 1. THE FORCE FIELDS
-pub const NIODOO_PHYSICS_BLEND: f32 = 0.55; // The "Soul" Strength
-pub const NIODOO_GHOST_GRAVITY: f32 = 10.0; // The "Topic" Anchor
-pub const NIODOO_REPULSION: f32 = -0.60; // The "Anti-Boring" Field
-pub const NIODOO_WOBBLE: f32 = 0.06; // The "Spark"
+// Baseline steering coefficients
+pub const NIODOO_PHYSICS_BLEND: f32 = 0.55; // Base steering blend
+pub const NIODOO_GHOST_GRAVITY: f32 = 10.0; // Topic anchoring strength
+pub const NIODOO_REPULSION: f32 = -0.60; // Repulsive steering strength
+pub const NIODOO_WOBBLE: f32 = 0.06; // Stochastic perturbation scale
 
-// 1.5. PHASE 2: ORBITAL MECHANICS CONSTANTS (Elastic Config v2.2)
-// 🌟 NIODOO v3.1: THE GENIUS CONFIG - Verified to solve Drying Towels
-// Run 11: blend=1.5, rep=-0.5, grav=0.2 -> WOBBLE-SNAP-BACK to correct "1 hour"
-pub const ORBIT_SPEED: f32 = 0.1; // Stable flow
+// Orbital steering coefficients
+// Internal notes indicated these settings helped with self-correction on simple reasoning traps.
+pub const ORBIT_SPEED: f32 = 0.1; // Orbital update rate
 pub const ORBIT_TOP_K: usize = 50;
-pub const GRAVITY_WELL: f32 = 0.2; // 🌟 HIGH ELASTICITY (allows thinking phase)
+pub const GRAVITY_WELL: f32 = 0.2; // Prompt anchoring strength
 
 // Helper to manage vector math
 fn normalize(v: &mut Vec<f32>) {
@@ -60,19 +58,19 @@ fn dot(a: &[f32], b: &[f32]) -> f32 {
     a.iter().zip(b).map(|(x, y)| x * y).sum()
 }
 
-// 2. THE LAUNCHPAD (Dynamic Ramp)
-// Prevents #ab artifacts by protecting sentence starts.
+// Dynamic ramp schedule
+// Delays steering at the start of decoding to reduce startup artifacts.
 pub const NIODOO_RAMP_START: usize = 4; // Zero physics for first 4 tokens
 pub const NIODOO_RAMP_END: usize = 10; // Full physics after 10 tokens
 
-// 3. THE BLACK HOLES
-// Repel these specifically to prevent loops and zombie modes.
+// Repulsion targets
+// These tokens receive additional negative pressure to reduce local loops.
 pub const BLACK_HOLE_TOKENS: &[&str] =
     &["swift", "very", "really", "basically", "assistant", "User"];
 
 // =============================================================================
-// PHASE 1: TELEMETRY (Self-Awareness Layer)
-// Tracks per-token physics forces for introspection.
+// Telemetry / introspection
+// Tracks per-token steering forces for analysis.
 // =============================================================================
 use serde::Serialize;
 
@@ -96,18 +94,18 @@ pub struct CognitiveTrace {
 }
 
 // =============================================================================
-// PHASE 4: AUTONOMIC OVERRIDE (Model-Requested Adrenaline)
-// The model can REQUEST physics changes by outputting special tags.
-// Tags are stripped from final output - user sees clean text.
+// Runtime request handling
+// The model can request steering changes by emitting special tags.
+// Tags may be preserved or filtered depending on the caller.
 // =============================================================================
 
 /// Request types the model can trigger
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RequestType {
-    Spike,   // "I'm stuck" → adrenaline=5.0, high exploration
-    Focus,   // "Lock this in" → high gravity, zero repulsion
-    Explore, // "Brainstorm" → high repulsion, low gravity
-    Reset,   // "I'm hallucinating" → clear all, return to base
+    Spike,   // Increase exploration when decoding appears stuck
+    Focus,   // Increase anchoring and reduce drift
+    Explore, // Broaden the search space
+    Reset,   // Return steering state to baseline
 }
 
 /// Detect if text contains a request tag. Returns the request type if found.
@@ -126,7 +124,7 @@ pub fn detect_request(text: &str) -> Option<RequestType> {
     }
 }
 
-/// Strip request tags from text so user sees clean output
+/// Optional helper for callers that want a sanitized view without request tags.
 pub fn strip_request_tags(text: &str) -> String {
     let patterns = [
         "[REQUEST: SPIKE]",
@@ -154,9 +152,8 @@ pub fn strip_request_tags(text: &str) -> String {
 }
 
 // =============================================================================
-// PHASE 3: THE MIRROR (Telemetry-to-Language Translator)
-// Converts raw physics state into natural language insights.
-// The LLM can "read its own dashboard" and self-correct.
+// Telemetry-to-language mapping
+// Converts steering state into a textual summary for introspection experiments.
 // =============================================================================
 
 // TELEMETRY_TO_TEXT PURGED (Physics-Only Reasoning)
@@ -264,8 +261,7 @@ struct Args {
     #[arg(long, default_value_t = 10.0)]
     ghost_gravity: f64,
 
-    /// Physics blend factor - how much physics force to apply
-    /// 🌟 GENIUS CONFIG: 1.5 = High Energy (Escape Velocity from wrong answers)
+    /// Physics blend factor controlling steering magnitude during decoding
     #[arg(long, default_value_t = 1.5)]
     physics_blend: f32,
 
@@ -283,8 +279,7 @@ struct Args {
     #[arg(long, default_value_t = true)]
     multiplicative_blend: bool,
 
-    /// Repulsion strength for black holes
-    /// 🌟 GENIUS CONFIG: -0.5 = Low Push (Semantic Drift, not Garbage)
+    /// Repulsion strength for the configured repulsion targets
     #[arg(long, default_value_t = -0.5)]
     repulsion_strength: f64,
 
@@ -296,16 +291,15 @@ struct Args {
     #[arg(long, default_value_t = false)]
     rainbow_test: bool,
 
-    /// ORBITAL MODE (Phase 2)
+    /// Enable orbital steering mode
     #[arg(long, default_value_t = false)]
     mode_orbital: bool,
 
-    /// Phase 2: How fast the thought orbits the concept (0.05 - 0.5)
+    /// Orbital update rate (0.05 - 0.5)
     #[arg(long, default_value_t = ORBIT_SPEED)]
     orbit_speed: f32,
 
-    /// Phase 2: How hard the prompt anchors the orbit
-    /// 🌟 GENIUS CONFIG: 0.2 = High Elasticity (Allows the "Thinking" Phase)
+    /// Prompt anchoring strength for orbital steering
     #[arg(long, default_value_t = GRAVITY_WELL)]
     gravity_well: f32,
 
@@ -1376,8 +1370,8 @@ impl PhysicsEngine for PrincipiaEngine {
         if self.current_step > 0 && self.current_step % 12 == 0 {
             let device = final_delta.device();
             // Strength 0.06 as requested by user (Sparring Partner mode)
-            if let Ok(wobble) = Tensor::randn(0.0f32, 0.06, final_delta.shape(), device) {
-                match final_delta.add(&wobble) {
+            if let Ok(perturbation_noise) = Tensor::randn(0.0f32, 0.06, final_delta.shape(), device) {
+                match final_delta.add(&perturbation_noise) {
                     Ok(new_delta) => {
                         final_delta = new_delta;
                         if layer_idx == 20 {
@@ -2289,23 +2283,21 @@ fn sample_token(logits: &Tensor, temp: f32, rng: &mut impl Rng) -> Result<u32> {
             }
 
             // =========================================================
-            // 🎤 THE MINORITY REPORT (Soul Amplification)
-            // "Give the microphone to the underdogs"
-            // When the dominant pathway is blocked, BOOST the alternatives.
-            // This is Lateral Inhibition - exciting the neighbors.
-            // TUNED v2: Reduced from 0.5 -> 0.25 to prevent "Moose" hallucinations
+            // Alternative-path amplification
+            // When the dominant pathway is suppressed, modestly boost nearby
+            // alternatives to encourage recovery from local attractors.
             // =========================================================
-            let boost_strength = viscosity * 0.25; // Whisper, don't scream
+            let boost_strength = viscosity * 0.25;
 
-            // Boost Candidate #4 ("meanwhile" - the soul)
+            // Boost candidate #4
             if top_k_indices.len() > 3 {
                 logits_vec[top_k_indices[3]] += boost_strength;
                 println!(
-                    "🎤 [SOUL] Amplifying Token {} by {:.2}",
+                    "[ALTERNATIVE_PATH] Amplifying token {} by {:.2}",
                     top_k_indices[3], boost_strength
                 );
             }
-            // Boost Candidate #5 ("remains" - the echo)
+            // Boost candidate #5
             if top_k_indices.len() > 4 {
                 logits_vec[top_k_indices[4]] += boost_strength * 0.7;
                 println!(
@@ -2923,7 +2915,7 @@ async fn run_simulation(_vis_tx: Option<Sender<Vec<RenderParticle>>>, args: Args
     }
 
     // PROMPT FORMATTING (Llama 3 Chat Template)
-    // Phase 4: Autonomic Override System Prompt (NO HINTS EDITION)
+    // Runtime control prompt
     let system_prompt = r#"You are a reasoning engine equipped with a Cognitive Mirror and Autonomic Nervous System.
 
 PASSIVE SYSTEM (The Mirror):

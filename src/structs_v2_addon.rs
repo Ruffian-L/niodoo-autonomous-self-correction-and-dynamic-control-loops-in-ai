@@ -1,7 +1,7 @@
 // Add to structs.rs after SplatSemantics (around line 150)
 // This goes right after the SplatSemantics definition
 
-/// Manifesto-compliant discrete RVQ-based semantics (Version 2)
+/// RVQ-based semantics representation (Version 2)
 /// Stores 12 discrete codes instead of dense 768D embedding
 /// Storage: ~48 bytes vs ~3072 bytes (64-128× compression)
 #[derive(Debug, Clone, Serialize, Deserialize, Archive, RkyvSerialize, RkyvDeserialize)]
@@ -25,7 +25,7 @@ pub struct SplatSemanticsV2 {
     #[serde(with = "BigArray")]
     pub manifold_vector: [f32; 64],
     
-    // --- God Protocol Additions (kept) ---
+    // --- Experimental steering metadata additions ---
     #[serde(default)]
     pub emotional_state: Option<EmotionalState>,
     

@@ -40,7 +40,7 @@ impl<'a, B: SplatBlobStore> HybridRetriever<'a, B> {
         }
     }
 
-    /// The "God Protocol" Search (Genesis Physics)
+    /// Physics-guided search path
     pub fn search(&self, query: &str, limit: usize) -> Vec<ScoredMemory> {
         // 1. Grip (Keyword Search) - Fast filter
         let keyword_hits = self.grip.search(query, limit * 2).unwrap_or_default();

@@ -145,7 +145,7 @@ impl TopologicalOscillator {
 
     /// Ingest a splat and convert its topology into rhythm
     ///
-    /// This is where the magic happens:
+    /// Processing stages:
     /// - Splat topology → persistence diagram
     /// - Persistence diagram → frequency modulation
     /// - Frequency modulation → rhythmic signature

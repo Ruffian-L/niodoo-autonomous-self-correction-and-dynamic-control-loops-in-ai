@@ -1,7 +1,5 @@
 //! Takens' Embedding: State-Space Reconstruction from Neural Rhythms
 //!
-//! "The magic theorem that lets us see the shape of time itself"
-//!
 //! Takens' Embedding Theorem: The topological structure of a high-dimensional
 //! dynamical system's attractor can be faithfully reconstructed from a time-series
 //! of a single scalar observable of that system.

@@ -6,7 +6,7 @@
 #
 # NOTE: LLMs are non-deterministic. Vanilla may sometimes get answers right
 # on a given run. Run multiple times to see variance. Niodoo shows visible
-# "wobble" reasoning even when reaching the same conclusion.
+# visible correction trajectories even when reaching the same conclusion.
 # ============================================================================
 
 set -e
@@ -150,7 +150,7 @@ echo "  Drying Towels  | $VERDICT1 | $NIODOO_VERDICT1"
 echo "  Monty Hall     | $VERDICT2 | $NIODOO_VERDICT2"
 echo ""
 echo "NOTE: Results vary between runs. Vanilla sometimes gets it right."
-echo "      The key difference is Niodoo shows visible reasoning (wobble)."
+echo "      The key difference is Niodoo shows a visible correction trajectory."
 echo ""
 echo "================================================================"
 echo ""

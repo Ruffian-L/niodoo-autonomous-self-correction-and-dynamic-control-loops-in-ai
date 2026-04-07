@@ -1,5 +1,5 @@
 // crates/core/src/encoder/rvq_candle.rs
-// Manifesto-compliant RVQ using Candle for GPU acceleration and SafeTensors persistence
+// RVQ implementation using Candle for GPU acceleration and SafeTensors persistence
 use candle_core::{DType, Device, IndexOp, Result, Tensor};
 use serde::{Deserialize, Serialize};
 use std::path::Path;

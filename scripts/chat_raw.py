@@ -61,7 +61,7 @@ def build_prompt(history: list[tuple[str, str]], user_message: str) -> str:
     transcript.append(f"user: {user_message}")
     transcript.append("assistant:")
     return (
-        "Continue this conversation exactly as an ongoing local chat. Preserve raw Niodoo behavior, including emitted control tags and telemetry.\n\n"
+        "Continue this conversation exactly as an ongoing local chat. Preserve emitted control tags and telemetry.\n\n"
         + "\n".join(transcript)
     )
 
@@ -145,7 +145,7 @@ def run_turn(args: argparse.Namespace, prompt: str, telemetry_path: Path, turn_i
 
 def parse_args() -> argparse.Namespace:
     root = repo_root()
-    parser = argparse.ArgumentParser(description="Raw multi-turn CLI for the local Niodoo binary.")
+    parser = argparse.ArgumentParser(description="Multi-turn CLI for the local Niodoo runtime.")
     parser.add_argument("--binary", type=Path, default=default_binary(root))
     parser.add_argument(
         "--model",

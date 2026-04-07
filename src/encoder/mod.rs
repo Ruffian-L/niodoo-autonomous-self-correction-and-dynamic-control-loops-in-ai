@@ -1,7 +1,7 @@
 pub mod disentangled;
 pub mod gaussian;
 pub mod rvq;
-pub mod rvq_candle; // Manifesto-compliant RVQ with Candle
+pub mod rvq_candle; // RVQ implementation with Candle
 pub mod triplane; // Tri-plane 6D decomposition
 
 use anyhow::{anyhow, Result};

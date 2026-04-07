@@ -134,7 +134,7 @@ pub struct SplatSemantics {
     #[serde(with = "BigArray")]
     pub manifold_vector: [f32; 64], // 256 bytes
 
-    // --- God Protocol Additions ---
+    // --- Experimental steering metadata additions ---
     // Emotional state stubbed
     #[serde(default)]
     pub emotional_state: Option<()>,
@@ -144,7 +144,7 @@ pub struct SplatSemantics {
     pub fitness_metadata: Option<()>,
 }
 
-/// Manifesto-compliant discrete RVQ-based semantics (Version 2)
+/// RVQ-based semantics representation (Version 2)
 /// Stores 12 discrete codes instead of dense 768D embedding
 /// Storage: ~48 bytes vs ~3072 bytes (64-128× compression)
 #[derive(Debug, Clone, Serialize, Deserialize, Archive, RkyvSerialize, RkyvDeserialize)]
@@ -167,7 +167,7 @@ pub struct SplatSemanticsV2 {
     #[serde(with = "BigArray")]
     pub manifold_vector: [f32; 64],
 
-    // --- God Protocol Additions (kept) ---
+    // --- Experimental steering metadata additions ---
     // Emotional state stubbed
     #[serde(default)]
     pub emotional_state: Option<()>,
