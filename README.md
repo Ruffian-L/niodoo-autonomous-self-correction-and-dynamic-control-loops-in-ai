@@ -52,6 +52,8 @@ It is a hybrid system:
 - universe generator scripts
 - vendored Cargo dependencies for offline builds
 
+The `vendor/` directory is intentional. It is included so the project can build offline with Cargo. Secret scanners commonly produce false positives inside vendored dependency trees, checksums, fixtures, and GUID-like constants. For this repo, the authored-file secret scan came back clean.
+
 Large local assets stay out of git:
 
 - GGUF model files
